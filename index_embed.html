@@ -210,8 +210,9 @@ body{
 .tut-card .t-img{width:120px;height:120px;border-radius:20px; object-fit:cover; margin:0 auto 12px;}
 .tut-card p{font-size:15px; line-height:1.7; color:var(--ink);}
 
-/* ===== 调试面板 ===== */
-#debug{position:absolute; right:10px; bottom:66px; z-index:50; font-size:11px;}
+/* ===== 调试面板（默认隐藏，仅开发者本地解锁） ===== */
+#debug{position:absolute; right:10px; bottom:66px; z-index:50; font-size:11px; display:none;}
+#debug.unlocked{display:block;}
 #debug .dbg-btn{width:36px;height:36px;border-radius:50%; border:none; background:rgba(107,79,107,.75); color:#fff; cursor:pointer; font-weight:900;}
 #debug .dbg-panel{display:none; margin-top:8px; background:rgba(255,255,255,.96); border-radius:14px; padding:10px 12px;
   width:210px; box-shadow:0 10px 30px rgba(0,0,0,.18);}
@@ -1100,7 +1101,26 @@ $('btn-mute').addEventListener('click', ()=>{
   if(Save.data.muted) Music.stop(); else Music.tryStart();
 });
 
-/* ---------------- 调试面板 ---------------- */
+/* ---------------- 调试面板（仅开发者本地解锁，朋友看不到） ---------------- */
+(function unlockDbg(){
+  const $d = $('debug');
+  if(localStorage.getItem('sg-dbg') === '1') $d.classList.add('unlocked');
+  let taps = 0, last = 0;
+  const logo = document.querySelector('#view-home .logo');
+  if(logo){
+    logo.addEventListener('click', ()=>{
+      const now = Date.now();
+      taps = (now - last < 1500) ? taps+1 : 1;
+      last = now;
+      if(taps >= 5){
+        taps = 0;
+        localStorage.setItem('sg-dbg','1');
+        $d.classList.add('unlocked');
+        $d.classList.add('open');
+      }
+    });
+  }
+})();
 $('dbg-rid').textContent = RULESET_ID;
 $('dbg-toggle').addEventListener('click', e=>{ e.stopPropagation(); $('debug').classList.toggle('open'); });
 $('dbg-coin').addEventListener('click', ()=>{ Save.data.coins += 100; Save.save(); refreshHome(); renderGarden(); });
