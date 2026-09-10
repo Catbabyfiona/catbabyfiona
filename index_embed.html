@@ -119,6 +119,23 @@ body{
 .cell.special-stripe img{animation:spin 4s linear infinite;}
 .cell.special-rainbow{outline:3px solid #FF6B9D; outline-offset:-3px; box-shadow:0 0 14px rgba(255,107,157,.9);}
 .cell.special-rainbow img{animation:rainbowSpin 3.5s linear infinite; filter:saturate(1.3) brightness(1.08);}
+/* 障碍覆盖层 */
+.cell.obstacle-jelly{position:relative;}
+.cell.obstacle-jelly::after{content:''; position:absolute; inset:0; border-radius:12px;
+  background:linear-gradient(135deg, rgba(135,206,250,.55), rgba(173,216,230,.35));
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.5); pointer-events:none;}
+.cell.obstacle-ice{position:relative;}
+.cell.obstacle-ice::after{content:''; position:absolute; inset:0; border-radius:12px;
+  background:linear-gradient(135deg, rgba(200,230,255,.65), rgba(180,210,240,.45));
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.7); pointer-events:none;}
+.cell.obstacle-stone2{position:relative;}
+.cell.obstacle-stone2::after{content:''; position:absolute; inset:2px; border-radius:10px;
+  background:radial-gradient(circle at 35% 30%, #B8B0A8, #8A8278 70%);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.25), inset 0 -2px 4px rgba(255,255,255,.15); pointer-events:none;}
+.cell.obstacle-stone1{position:relative;}
+.cell.obstacle-stone1::after{content:''; position:absolute; inset:4px; border-radius:10px;
+  background:repeating-linear-gradient(135deg, rgba(150,140,130,.7) 0 4px, rgba(180,170,160,.5) 4px 8px);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.2); pointer-events:none;}
 @keyframes spin{to{transform:rotate(360deg);}}
 @keyframes rainbowSpin{0%{transform:rotate(0) scale(1);}50%{transform:rotate(180deg) scale(1.08);}100%{transform:rotate(360deg) scale(1);}}
 .game-foot{flex:none; display:flex; align-items:center; justify-content:space-around; padding:8px 16px 14px; gap:10px;}
@@ -475,15 +492,28 @@ const Engine = {
     this.over = false; this.busy = false; this.noMatchHints = 0;
     let guard = 0;
     do { this.board = this.randomBoard(); guard++; } while(this.findMatches().length>0 && guard<30);
+    this.applyObstacles(level.n);
   },
   randomBoard(){
     const T = this.types || CONFIG.types;
     const b = [];
     for(let r=0;r<CONFIG.rows;r++){ const row=[];
-      for(let c=0;c<CONFIG.cols;c++) row.push({ t: T[(Math.random()*T.length)|0], s:null });
+      for(let c=0;c<CONFIG.cols;c++) row.push({ t: T[(Math.random()*T.length)|0], s:null, jelly:0, stone:0, ice:0 });
       b.push(row);
     }
     return b;
+  },
+  /* 按关卡难度随机放障碍：jelly=果冻(1次破) stone=石头(2次碎) ice=冰块(锁定交换) */
+  applyObstacles(n){
+    const coords = [];
+    for(let r=1;r<CONFIG.rows;r++) for(let c=0;c<CONFIG.cols;c++) coords.push({r,c});
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    shuffle(coords);
+    let i=0;
+    const pick = (cnt) => { const out=[]; for(let k=0;k<cnt && i<coords.length;k++) out.push(coords[i++]); return out; };
+    if(n>=8){ pick(4+Math.min(6, n-8)).forEach(p=>{ this.board[p.r][p.c].jelly=1; }); }
+    if(n>=12){ pick(2+Math.min(3, (n-12)>>1)).forEach(p=>{ this.board[p.r][p.c].stone=2; }); }
+    if(n>=16){ pick(3+Math.min(4, (n-16)>>1)).forEach(p=>{ this.board[p.r][p.c].ice=1; }); }
   },
   at(r,c){ return (r>=0&&r<CONFIG.rows&&c>=0&&c<CONFIG.cols) ? this.board[r][c] : null; },
 
@@ -591,7 +621,15 @@ const Engine = {
       else if(b.s==='rainbow'){ for(let rr=0;rr<CONFIG.rows;rr++) for(let cc=0;cc<CONFIG.cols;cc++){
         if(this.board[rr][cc].t===b.t){ const k=rr+','+cc; if(!eliminate.has(k)){ eliminate.add(k); queue.push(k); } } } }
     }
-    // 计分
+    // 计分前：障碍受击掉血
+    for(const k of eliminate){
+      const [r,c] = k.split(',').map(Number);
+      const cell = this.board[r][c];
+      if(!cell || !cell.t) continue;
+      if(cell.jelly===1) cell.jelly=0;
+      if(cell.ice===1) cell.ice=0;
+      if(cell.stone>0) cell.stone--;
+    }
     const mult = CONFIG.comboMult[Math.min(this.combo, CONFIG.comboMult.length)-1];
     const pts = eliminate.size * CONFIG.baseScore * mult;
     this.score += pts;
@@ -613,7 +651,7 @@ const Engine = {
         if(!eliminate.has(r+','+c)){ this.board[write][c]=this.board[r][c]; if(write!==r) this.board[r][c]=null; write--; }
       }
       for(let r=write; r>=0; r--){
-        this.board[r][c] = { t: (this.types||CONFIG.types)[(Math.random()*(this.types||CONFIG.types).length)|0], s:null };
+        this.board[r][c] = { t: (this.types||CONFIG.types)[(Math.random()*(this.types||CONFIG.types).length)|0], s:null, jelly:0, stone:0, ice:0 };
         filled.add(r+','+c);
       }
     }
@@ -791,6 +829,10 @@ function renderBoard(anim){
     cell.className = 'cell';
     if(b.s==='h' || b.s==='v') cell.classList.add('special-stripe');
     if(b.s==='rainbow') cell.classList.add('special-rainbow');
+    if(b.jelly===1) cell.classList.add('obstacle-jelly');
+    if(b.stone===2) cell.classList.add('obstacle-stone2');
+    else if(b.stone===1) cell.classList.add('obstacle-stone1');
+    if(b.ice===1) cell.classList.add('obstacle-ice');
     if(anim.popping && anim.popping.has(r+','+c)) cell.classList.add('popping');
     if(anim.falling && anim.falling.has(r+','+c)) cell.classList.add('falling');
     const img = document.createElement('img');
@@ -828,6 +870,7 @@ $('board').addEventListener('click', e=>{
   if(!cell || Engine.busy || Engine.over) return;
   Sfx.ensure(); Sfx.click();
   const r = +cell.dataset.r, c = +cell.dataset.c;
+  if(Engine.board[r][c].ice){ Sfx.swapback(); showToast('这块被冻住了，从旁边消它解冻！'); return; }
   if(!selected){ selected = {r,c}; renderBoard(); return; }
   if(selected.r===r && selected.c===c){ selected = null; renderBoard(); return; }
   if(Math.abs(r-selected.r)+Math.abs(c-selected.c)===1){
