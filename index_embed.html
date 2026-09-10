@@ -318,7 +318,9 @@ body{
     </div>
     <div class="game-foot">
       <button class="btn mini gold" id="btn-win-now" style="display:none;">过关</button>
-      <button class="btn mini ghost" id="btn-shuffle">重排</button>
+      <button class="btn mini ghost" id="btn-hint">提示 50</button>
+      <button class="btn mini ghost" id="btn-shuffle">重排 100</button>
+      <button class="btn mini ghost" id="btn-plus5">+5步 150</button>
       <button class="btn mini ghost" id="btn-restart">重开</button>
       <button class="btn mini ghost" id="btn-mute">声音：开</button>
     </div>
@@ -1286,9 +1288,32 @@ $('btn-tut-ok').addEventListener('click', ()=>{
   hintPair = findHintPair();
   if(hintPair){ renderBoard(); showToast('试试交换高亮的两颗糖果，凑 3 连就能消除！'); }
 });
-$('btn-shuffle').addEventListener('click', ()=>{
+function buyPowerup(cost, action, okMsg){
   if(Engine.busy || Engine.over || currentView!=='game') return;
-  Engine.shuffle(); renderBoard(); showToast('重新洗牌！');
+  Sfx.ensure();
+  if(Save.data.coins < cost){ Sfx.swapback(); showToast('金币不够哦，去闯关赚金币吧！'); return; }
+  Save.data.coins -= cost; Save.save();
+  Sfx.coin();
+  action();
+  showToast(okMsg + '（-' + cost + ' 币）');
+  renderHUD();
+}
+$('btn-shuffle').addEventListener('click', ()=>{
+  buyPowerup(100, ()=>{ Engine.shuffle(); renderBoard(); }, '重新洗牌！');
+});
+$('btn-hint').addEventListener('click', ()=>{
+  buyPowerup(50, ()=>{
+    hintPair = findHintPair();
+    renderBoard();
+    if(hintPair){ showToast('试试交换高亮的两颗糖！'); }
+    else showToast('这局没找到可消除的，用重排试试！');
+  }, '高亮一对可消除的糖！');
+});
+$('btn-plus5').addEventListener('click', ()=>{
+  buyPowerup(150, ()=>{
+    Engine.level.steps += 5;
+    showToast('加 5 步！');
+  }, '加 5 步！');
 });
 $('btn-restart').addEventListener('click', ()=>{
   if(currentView!=='game') return;
