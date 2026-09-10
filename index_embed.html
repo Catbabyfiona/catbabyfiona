@@ -784,8 +784,12 @@ function renderMap(){
     const parent = isForest ? forestGrid : grid;
     if(!parent) return;
     const need = CONFIG.unlockStars[lv.n-1];
-    let playable = lv.n <= Save.data.unlocked && Save.data.stars >= need;
-    if(isForest) playable = playable && forestUnlocked;
+    let playable;
+    if(isForest){
+      playable = Save.data.stars >= need && forestUnlocked;
+    } else {
+      playable = lv.n <= Save.data.unlocked && Save.data.stars >= need;
+    }
     const best = Save.data.best[lv.n] || 0;
     const div = document.createElement('div');
     div.className = 'lv-card' + (isForest ? ' forest-card' : '');
