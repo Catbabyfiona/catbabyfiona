@@ -832,6 +832,7 @@ $('board').addEventListener('click', e=>{
   if(selected.r===r && selected.c===c){ selected = null; renderBoard(); return; }
   if(Math.abs(r-selected.r)+Math.abs(c-selected.c)===1){
     const a = selected; selected = null;
+    const b = {r, c};
     const sa = Engine.board[a.r][a.c].s;
     const sb = Engine.board[b.r][b.c].s;
     if(sa || sb){
