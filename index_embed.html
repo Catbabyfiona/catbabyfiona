@@ -171,7 +171,7 @@ body{
 #view-garden.season-winter{background:linear-gradient(180deg,#E3EDF7 0%,#F5F9FF 100%);}
 /* 飘落粒子 */
 #view-garden .petals, #view-garden .snow{position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:50;}
-#view-garden .petals span, #view-garden .snow span{position:absolute; top:-10px; width:8px; height:8px; border-radius:50%; opacity:.7; animation:fall linear infinite;}
+#view-garden .petals span, #view-garden .snow span{position:absolute; top:-10px; width:8px; height:12px; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; opacity:.75; animation:fall linear infinite;}
 @keyframes fall{0%{transform:translateY(0) rotate(0); opacity:0;} 10%{opacity:.8;} 100%{transform:translateY(110vh) rotate(360deg); opacity:.3;}}
 .garden-top{display:flex; align-items:center; gap:8px; padding:12px 14px; flex:none;}
 .flower-dex-bar{margin:0 16px 8px; padding:9px 14px; border-radius:999px; background:rgba(255,255,255,.88); box-shadow:var(--shadow);
