@@ -134,12 +134,12 @@ body{
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.7); pointer-events:none;}
 .cell.obstacle-stone2{position:relative;}
 .cell.obstacle-stone2::after{content:''; position:absolute; inset:2px; border-radius:10px;
-  background:radial-gradient(circle at 35% 30%, #B8B0A8, #8A8278 70%);
-  box-shadow:inset 0 2px 4px rgba(0,0,0,.25), inset 0 -2px 4px rgba(255,255,255,.15); pointer-events:none;}
+  background:radial-gradient(circle at 35% 30%, #E8D5B8, #B89968 75%);
+  box-shadow:inset 0 2px 4px rgba(120,80,40,.25), inset 0 -2px 4px rgba(255,255,255,.2); pointer-events:none;}
 .cell.obstacle-stone1{position:relative;}
 .cell.obstacle-stone1::after{content:''; position:absolute; inset:4px; border-radius:10px;
-  background:repeating-linear-gradient(135deg, rgba(150,140,130,.7) 0 4px, rgba(180,170,160,.5) 4px 8px);
-  box-shadow:inset 0 1px 2px rgba(0,0,0,.2); pointer-events:none;}
+  background:repeating-linear-gradient(135deg, rgba(180,150,110,.75) 0 4px, rgba(210,185,150,.55) 4px 8px);
+  box-shadow:inset 0 1px 2px rgba(120,80,40,.2); pointer-events:none;}
 @keyframes spin{to{transform:rotate(360deg);}}
 @keyframes rainbowSpin{0%{transform:rotate(0) scale(1);}50%{transform:rotate(180deg) scale(1.08);}100%{transform:rotate(360deg) scale(1);}}
 .game-foot{flex:none; display:grid; grid-template-columns:repeat(5,1fr); align-items:center; padding:8px 10px 14px; gap:8px;}
@@ -835,11 +835,17 @@ function renderMap(){
 }
 
 /* ---------------- 游戏 ---------------- */
+const COLLECT_NAME = {
+  strawberry:'草莓', blueberry:'蓝莓', mint:'薄荷', lemon:'柠檬', orange:'橘子', grape:'葡萄',
+  rabbit:'小兔', cat:'小猫', bear:'小熊', seal:'海豹', dog:'柯基', fox:'小狐',
+  star:'星星', moon:'月亮', crystal:'水晶', wand:'魔法棒', heart:'爱心', bow:'蝴蝶结'
+};
 function renderHUD(){
   const lv = Engine.level;
   const stepsLeft = Math.max(0, lv.steps - Engine.moves);
   $('hud-target').textContent = lv.collect
-    ? (lv.type==='both' ? lv.target + ' 分 · ' + lv.collect.n + ' 个' : lv.collect.n + ' 个')
+    ? (lv.type==='both' ? lv.target + '分·收' + COLLECT_NAME[lv.collect.t] + lv.collect.n + '个'
+                        : '收' + COLLECT_NAME[lv.collect.t] + ' ' + lv.collect.n + '个')
     : lv.target + ' 分';
   $('hud-steps').textContent = stepsLeft;
   $('hud-score').textContent = Engine.score;
@@ -865,6 +871,9 @@ function renderBoard(anim){
     if(b.stone===2) cell.classList.add('obstacle-stone2');
     else if(b.stone===1) cell.classList.add('obstacle-stone1');
     if(b.ice===1) cell.classList.add('obstacle-ice');
+    if(b.jelly===1) cell.title='果冻：消除一次就破';
+    if(b.stone>0) cell.title='石头：相邻消除两次才碎';
+    if(b.ice===1) cell.title='冰块：冻住啦，从旁边消它解冻';
     if(anim.popping && anim.popping.has(r+','+c)) cell.classList.add('popping');
     if(anim.falling && anim.falling.has(r+','+c)) cell.classList.add('falling');
     const img = document.createElement('img');
