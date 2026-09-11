@@ -164,6 +164,15 @@ body{
 
 /* ===== 花园 ===== */
 #view-garden{background:linear-gradient(180deg,#E6F9F1 0%,#FFF3E0 100%);}
+/* 季节皮肤 */
+#view-garden.season-spring{background:linear-gradient(180deg,#FFE3EC 0%,#FFF8E1 100%);}
+#view-garden.season-summer{background:linear-gradient(180deg,#D4F1F9 0%,#FFF3E0 100%);}
+#view-garden.season-autumn{background:linear-gradient(180deg,#FFE8CC 0%,#FFF0D6 100%);}
+#view-garden.season-winter{background:linear-gradient(180deg,#E3EDF7 0%,#F5F9FF 100%);}
+/* 飘落粒子 */
+#view-garden .petals, #view-garden .snow{position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1;}
+#view-garden .petals span, #view-garden .snow span{position:absolute; top:-10px; width:8px; height:8px; border-radius:50%; opacity:.7; animation:fall linear infinite;}
+@keyframes fall{0%{transform:translateY(0) rotate(0); opacity:0;} 10%{opacity:.8;} 100%{transform:translateY(110vh) rotate(360deg); opacity:.3;}}
 .garden-top{display:flex; align-items:center; gap:8px; padding:12px 14px; flex:none;}
 .flower-dex-bar{margin:0 16px 8px; padding:9px 14px; border-radius:999px; background:rgba(255,255,255,.88); box-shadow:var(--shadow);
   font-size:12px; font-weight:800; color:#8A5A44; text-align:center; line-height:1.5;}
@@ -764,13 +773,38 @@ const sleep = ms => new Promise(res => setTimeout(res, ms));
 let selected = null, currentPlot = -1, gardenTimer = null, hintPair = null;
 
 /* ---------------- 视图路由 ---------------- */
+function applySeason(){
+  const v = document.getElementById('view-garden');
+  if(!v) return;
+  const m = new Date().getMonth() + 1; // 1-12
+  let cls = 'season-spring', particle = 'petals', color = '#FFB6C1';
+  if(m>=6 && m<=8){ cls='season-summer'; particle='petals'; color='#FFF9C4'; }
+  else if(m>=9 && m<=11){ cls='season-autumn'; particle='petals'; color='#FFB74D'; }
+  else if(m===12 || m===1 || m===2){ cls='season-winter'; particle='snow'; color='#FFFFFF'; }
+  v.classList.remove('season-spring','season-summer','season-autumn','season-winter');
+  v.classList.add(cls);
+  // 清掉旧粒子
+  v.querySelectorAll('.petals, .snow').forEach(e=>e.remove());
+  const layer = document.createElement('div');
+  layer.className = particle;
+  for(let i=0;i<18;i++){
+    const s = document.createElement('span');
+    s.style.left = (Math.random()*100) + '%';
+    s.style.animationDuration = (6 + Math.random()*6) + 's';
+    s.style.animationDelay = (Math.random()*8) + 's';
+    s.style.background = color;
+    s.style.width = s.style.height = (4 + Math.random()*6) + 'px';
+    layer.appendChild(s);
+  }
+  v.appendChild(layer);
+}
 function go(view){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   $('view-'+view).classList.add('active');
   currentView = view;
   if(view==='home') refreshHome();
   if(view==='map') renderMap();
-  if(view==='garden') renderGarden();
+  if(view==='garden'){ applySeason(); renderGarden(); }
   if(view==='dex') renderDex();
   if(view!=='game') Music.playTrack('menu');
   document.querySelector('.app').scrollTop = 0;
