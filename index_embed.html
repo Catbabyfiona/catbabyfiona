@@ -911,7 +911,9 @@ $('board').addEventListener('click', e=>{
   if(!cell || Engine.busy || Engine.over) return;
   Sfx.ensure(); Sfx.click();
   const r = +cell.dataset.r, c = +cell.dataset.c;
-  if(Engine.board[r][c].ice){ Sfx.swapback(); showToast('这块被冻住了，从旁边消它解冻！'); return; }
+  if(Engine.board[r][c].ice){ Sfx.swapback(); showToast('这块被冻住啦，从旁边消它解冻！'); return; }
+  if(Engine.board[r][c].jelly===1){ showToast('这是果冻，消除一次就破'); return; }
+  if(Engine.board[r][c].stone>0){ showToast('这是石头，相邻消除两次才碎'); return; }
   if(!selected){ selected = {r,c}; renderBoard(); return; }
   if(selected.r===r && selected.c===c){ selected = null; renderBoard(); return; }
   if(Math.abs(r-selected.r)+Math.abs(c-selected.c)===1){
