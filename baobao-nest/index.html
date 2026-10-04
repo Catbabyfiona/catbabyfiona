@@ -806,6 +806,7 @@ const seal3D = (function(){
     if(rect.width<10) return;
     const W = rect.width, H = rect.height;
     const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+    window.__renderer3d = renderer;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
     renderer.setSize(W, H);
     renderer.shadowMap.enabled = false;
@@ -815,6 +816,7 @@ const seal3D = (function(){
     const camera = new THREE.PerspectiveCamera(38, W/H, 0.1, 200);
     camera.position.set(0, 1.2, 5.0);
     camera.lookAt(0, 0.2, 0);
+    window.__scene3d = scene; window.__camera3d = camera;
 
     // 灯光：软胶海豹感
     scene.add(new THREE.HemisphereLight(0xffffff, 0xdfeaf0, 1.0));
@@ -952,7 +954,7 @@ const seal3D = (function(){
       renderer.dispose();
     };
   }
-  // 等容器有尺寸后初始化（重试直到有宽高；放宽到200帧防早期布局未就绪）
+  // 等容器有尺寸后初始化（setTimeout 兜底，兼容 rAF 受限环境；200次×100ms）
   let tries = 0;
   function tryInit(){
     const holder = $('seal3d');
@@ -960,12 +962,12 @@ const seal3D = (function(){
       init();
     } else if(tries < 200){
       tries++;
-      requestAnimationFrame(tryInit);
+      setTimeout(tryInit, 100);
     }
   }
   window.__init3d = init;
-  if(document.readyState==='complete'){ requestAnimationFrame(tryInit); }
-  else window.addEventListener('load', ()=>requestAnimationFrame(tryInit));
+  if(document.readyState==='complete'){ setTimeout(tryInit, 0); }
+  else window.addEventListener('load', ()=>setTimeout(tryInit, 0));
   return api;
 })();
 
