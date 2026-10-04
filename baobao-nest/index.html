@@ -30,7 +30,8 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
   color:var(--ink);
   background:var(--sky);
-  overflow:hidden;
+  overflow-x:hidden;
+  overflow-y:auto;
   user-select:none;
   -webkit-user-select:none;
 }
@@ -38,7 +39,7 @@ body{
 #app{
   position:relative;
   max-width:480px;
-  height:100%;
+  min-height:100%;
   margin:0 auto;
   background:linear-gradient(180deg,#E8F4F8 0%,#F3F9FC 55%,#FFFFFF 100%);
   overflow:hidden;
@@ -100,25 +101,25 @@ body{
 .stage{
   position:relative;z-index:5;
   text-align:center;
-  padding:6px 20px 0;
+  padding:4px 16px 0;
 }
 .stage-msg{
-  font-size:14px;color:#6E8494;
-  margin-bottom:2px;min-height:22px;
+  font-size:13px;color:#6E8494;
+  margin-bottom:0;min-height:20px;
   font-weight:500;
 }
 .stage-msg .seal-name{color:var(--ink);font-weight:700;}
 .seal-wrap{
   position:relative;
   margin:0 auto;
-  width:min(72vw,300px);
+  width:min(56vw,240px);
   aspect-ratio:1/1;
 }
 .seal-wrap img{
   width:100%;height:100%;
   object-fit:contain;
-  border-radius:40px;
-  filter:drop-shadow(0 14px 20px rgba(46,58,68,.14));
+  border-radius:36px;
+  filter:drop-shadow(0 12px 18px rgba(46,58,68,.14));
   transition:transform .35s ease;
 }
 .seal-wrap.touch img{transform:scale(.96) rotate(-2deg);}
@@ -151,7 +152,7 @@ body{
 /* 数值卡片 */
 .stats{
   display:grid;grid-template-columns:1fr 1fr;
-  gap:12px;margin:18px auto 0;max-width:360px;
+  gap:10px;margin:10px auto 0;max-width:360px;
 }
 .stat{
   background:rgba(255,255,255,.88);
@@ -179,7 +180,7 @@ body{
 .actions{
   position:relative;z-index:10;
   display:grid;grid-template-columns:repeat(4,1fr);
-  gap:12px;padding:20px 20px 10px;max-width:420px;margin:0 auto;
+  gap:10px;padding:12px 16px 8px;max-width:420px;margin:0 auto;
 }
 .action-btn{
   display:flex;flex-direction:column;align-items:center;gap:7px;
@@ -198,13 +199,14 @@ body{
 .action-btn .a-txt{font-size:12px;font-weight:600;color:var(--ink);}
 /* 底部导航 */
 .bottomnav{
-  position:absolute;bottom:0;left:0;right:0;z-index:50;
+  position:sticky;bottom:0;left:0;right:0;z-index:50;
   background:rgba(255,255,255,.94);
   backdrop-filter:blur(10px);
   border-radius:24px 24px 0 0;
   box-shadow:0 -6px 24px rgba(46,58,68,.06);
   padding:8px 12px calc(10px + env(safe-area-inset-bottom));
   display:flex;
+  margin-top:8px;
 }
 .nav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -218,7 +220,8 @@ body{
 .n-ico{transition:transform .2s;}
 /* ===== 页面容器 ===== */
 .page{
-  position:absolute;top:0;left:0;right:0;bottom:0;z-index:30;
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:30;
+  margin:0 auto;max-width:480px;
   background:linear-gradient(180deg,#F3F9FC 0%,#FFFFFF 60%);
   transform:translateX(100%);
   transition:transform .32s cubic-bezier(.4,0,.2,1);
@@ -289,7 +292,7 @@ body{
 .tl-card .t-state.done{background:#E3F0F5;color:#4A6A80;}
 /* 弹层 */
 .modal-mask{
-  position:absolute;inset:0;z-index:90;
+  position:fixed;inset:0;z-index:90;
   background:rgba(46,58,68,.35);
   display:none;align-items:flex-end;justify-content:center;
 }
@@ -336,7 +339,7 @@ body{
 .game-btn:active{transform:scale(.96);}
 /* 接饼干小游戏 */
 #catchGame{
-  position:absolute;inset:0;z-index:95;
+  position:fixed;inset:0;z-index:95;
   background:linear-gradient(180deg,#D9ECF4 0%,#EFF7FB 70%);
   display:none;flex-direction:column;
 }
@@ -366,12 +369,11 @@ body{
   position:absolute;inset:0;background:rgba(255,255,255,.9);
   display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
   z-index:10;text-align:center;
-}
-.catch-end-screen.show{display:flex;}
+}.catch-end-screen.show{display:flex;}
 .catch-end-screen .big{font-size:52px;}
 .catch-end-screen .res{font-size:20px;font-weight:700;}
 /* 泡泡搓澡 */
-#bubbleGame{position:absolute;inset:0;z-index:95;background:linear-gradient(180deg,#CFE6F2,#E8F4F8);display:none;flex-direction:column;}
+#bubbleGame{position:fixed;inset:0;z-index:95;background:linear-gradient(180deg,#CFE6F2,#E8F4F8);display:none;flex-direction:column;}
 #bubbleGame.show{display:flex;}
 .bub-hud{display:flex;justify-content:space-between;align-items:center;padding:calc(16px + env(safe-area-inset-top)) 24px 8px;font-weight:700;}
 .bub-field{position:relative;flex:1;margin:0 10px 10px;border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#BFE0EF,#EAF6FA);}
@@ -379,7 +381,7 @@ body{
 .bubble-item{position:absolute;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;animation:float 2.6s ease-in-out infinite;}
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
 /* 心情拍手 */
-#clapGame{position:absolute;inset:0;z-index:95;background:linear-gradient(180deg,#F7E3E8,#FBF0F2);display:none;flex-direction:column;}
+#clapGame{position:fixed;inset:0;z-index:95;background:linear-gradient(180deg,#F7E3E8,#FBF0F2);display:none;flex-direction:column;}
 #clapGame.show{display:flex;}
 .clap-hud{display:flex;justify-content:space-between;align-items:center;padding:calc(16px + env(safe-area-inset-top)) 24px 8px;font-weight:700;}
 .clap-field{position:relative;flex:1;margin:0 10px 10px;border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#F2D7DE,#FCF2F4);text-align:center;}
@@ -1051,6 +1053,14 @@ function bindEvents(){
   document.querySelectorAll('.back').forEach(b=>{
     b.addEventListener('click', ()=>{ closePage(b.dataset.close); });
   });
+  // 点击豹豹本身 = 摸摸头
+  const sealEl = $('sealWrap');
+  if(sealEl){
+    sealEl.addEventListener('click', (e)=>{
+      if(e.target.closest('.bubble')) return;
+      doPet();
+    });
+  }
   document.querySelectorAll('.action-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const act = btn.dataset.act;
