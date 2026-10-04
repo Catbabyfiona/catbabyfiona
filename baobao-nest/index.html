@@ -867,6 +867,7 @@ const seal3D = (function(){
         seal.position.y -= (center.y + 0.15);
         seal.position.z -= center.z;
         scene.add(seal);
+        addFaceDetails(seal);
         sealReady = true;
         document.body.classList.add('seal3d-on');
         holder.classList.add('ready');
@@ -874,6 +875,24 @@ const seal3D = (function(){
       }, undefined, function(err){
         console.error('GLB加载失败', err);
       });
+    }
+
+    // 面部细节：黑圆眼+高光+粉舌（挂到海豹模型局部，归一化后最大维度约2、脸朝+Z）
+    function addFaceDetails(sealObj){
+      try{
+        const eyeMat = new THREE.MeshStandardMaterial({color:0x16161d, roughness:0.2});
+        const glintMat = new THREE.MeshBasicMaterial({color:0xffffff});
+        const tMat = new THREE.MeshStandardMaterial({color:0xff7da0, roughness:0.35});
+        const eg = new THREE.SphereGeometry(0.085,24,24);
+        const el = new THREE.Mesh(eg, eyeMat); el.position.set(-0.23,0.54,0.58); sealObj.add(el);
+        const er = new THREE.Mesh(eg, eyeMat); er.position.set(0.23,0.54,0.58); sealObj.add(er);
+        const gg = new THREE.SphereGeometry(0.03,12,12);
+        const glt = new THREE.Mesh(gg, glintMat); glt.position.set(-0.26,0.565,0.64); sealObj.add(glt);
+        const grt = new THREE.Mesh(gg, glintMat); grt.position.set(0.20,0.565,0.64); sealObj.add(grt);
+        const tng = new THREE.Mesh(new THREE.SphereGeometry(0.09,20,20), tMat);
+        tng.scale.set(0.8,0.4,0.75); tng.position.set(0,0.32,0.66); sealObj.add(tng);
+        window.__eyeL=el; window.__eyeR=er; window.__tongue=tng;
+      }catch(e){ console.error('addFaceDetails', e); }
     }
 
     // 互动状态
@@ -933,17 +952,18 @@ const seal3D = (function(){
       renderer.dispose();
     };
   }
-  // 等容器有尺寸后初始化（重试直到有宽高）
+  // 等容器有尺寸后初始化（重试直到有宽高；放宽到200帧防早期布局未就绪）
   let tries = 0;
   function tryInit(){
     const holder = $('seal3d');
     if(holder && holder.getBoundingClientRect().width >= 10){
       init();
-    } else if(tries < 40){
+    } else if(tries < 200){
       tries++;
       requestAnimationFrame(tryInit);
     }
   }
+  window.__init3d = init;
   if(document.readyState==='complete'){ requestAnimationFrame(tryInit); }
   else window.addEventListener('load', ()=>requestAnimationFrame(tryInit));
   return api;
