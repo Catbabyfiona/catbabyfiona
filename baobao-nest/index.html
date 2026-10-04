@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>豹豹的小窝 · 随身陪伴</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23E8F4F8'/%3E%3Ccircle cx='50' cy='62' r='30' fill='%23A9BFCB'/%3E%3Ccircle cx='42' cy='46' r='4' fill='%232E3A44'/%3E%3Ccircle cx='58' cy='46' r='4' fill='%232E3A44'/%3E%3Ccircle cx='50' cy='56' r='6' fill='%23F2A6B8'/%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   豹豹的小窝 · 视觉规范
+   基调：极地冰雪 + 3D简约治愈 + 大量留白
+   色板：冰蓝天空 #E8F4F8 / 雪白 #FFFFFF / 雾蓝灰 #A9BFCB /
+         深灰蓝文字 #2E3A44 / 奶白 #FBF7F0 / 淡粉点缀 #F2A6B8
+   ============================================================ */
+:root{
+  --sky:#E8F4F8;
+  --snow:#FFFFFF;
+  --mist:#A9BFCB;
+  --ink:#2E3A44;
+  --cream:#FBF7F0;
+  --pink:#F2A6B8;
+  --softblue:#D9ECF4;
+  --card:#FDFDFD;
+  --shadow:0 8px 24px rgba(46,58,68,.08);
+  --radius:24px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--ink);
+  background:var(--sky);
+  overflow:hidden;
+  user-select:none;
+  -webkit-user-select:none;
+}
+/* 手机竖屏容器 */
+#app{
+  position:relative;
+  max-width:480px;
+  height:100%;
+  margin:0 auto;
+  background:linear-gradient(180deg,#E8F4F8 0%,#F3F9FC 55%,#FFFFFF 100%);
+  overflow:hidden;
+  box-shadow:0 0 40px rgba(46,58,68,.10);
+}
+/* 顶部装饰云 */
+.deco-cloud{position:absolute;background:#FFFFFF;border-radius:999px;opacity:.6;filter:blur(1px);z-index:0;pointer-events:none;}
+/* 顶部状态栏 */
+.topbar{
+  position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(12px + env(safe-area-inset-top)) 20px 12px;
+}
+.brand{display:flex;align-items:center;gap:8px;}
+.brand .logo{
+  width:38px;height:38px;border-radius:50%;
+  background:#FFFFFF;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow);
+}
+.brand .logo img{width:30px;height:30px;border-radius:50%;object-fit:cover;}
+.brand .name{font-size:17px;font-weight:700;letter-spacing:1px;}
+.currencies{display:flex;gap:8px;}
+.currency{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.85);
+  padding:5px 11px;border-radius:999px;
+  font-size:13px;font-weight:600;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(4px);
+}
+.currency .ico{width:16px;height:16px;border-radius:50%;flex-shrink:0;}
+.ico-cookie{background:radial-gradient(circle at 30% 30%,#F5D9A8,#D9A05B);}
+.ico-starsand{background:radial-gradient(circle at 30% 30%,#FFF3D6,#E8C37A);box-shadow:inset 0 0 0 2px #F7E6BE;}
+/* 亲密度等级条 */
+.levelbar{
+  position:relative;z-index:10;
+  margin:4px 20px 0;
+  display:flex;align-items:center;gap:10px;
+}
+.level-tag{
+  background:var(--cream);
+  border-radius:12px;padding:4px 10px;
+  font-size:12px;font-weight:700;white-space:nowrap;
+  color:#B98A5A;
+}
+.level-track{
+  flex:1;height:10px;border-radius:999px;
+  background:rgba(255,255,255,.8);
+  overflow:hidden;box-shadow:inset 0 1px 3px rgba(46,58,68,.12);
+}
+.level-fill{
+  height:100%;width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#F7E0B0,#F2C48A);
+  transition:width .6s ease;
+}
+/* ===== 主舞台：豹豹 & 数值 ===== */
+.stage{
+  position:relative;z-index:5;
+  text-align:center;
+  padding:6px 20px 0;
+}
+.stage-msg{
+  font-size:14px;color:#6E8494;
+  margin-bottom:2px;min-height:22px;
+  font-weight:500;
+}
+.stage-msg .seal-name{color:var(--ink);font-weight:700;}
+.seal-wrap{
+  position:relative;
+  margin:0 auto;
+  width:min(72vw,300px);
+  aspect-ratio:1/1;
+}
+.seal-wrap img{
+  width:100%;height:100%;
+  object-fit:contain;
+  border-radius:40px;
+  filter:drop-shadow(0 14px 20px rgba(46,58,68,.14));
+  transition:transform .35s ease;
+}
+.seal-wrap.touch img{transform:scale(.96) rotate(-2deg);}
+.hat-overlay{
+  position:absolute;z-index:15;
+  top:2%;left:50%;transform:translateX(-50%);
+  font-size:min(9vw,44px);
+  pointer-events:none;
+  text-shadow:0 3px 6px rgba(46,58,68,.18);
+}
+/* 气泡 */
+.bubble{
+  position:absolute;z-index:20;
+  top:-6px;left:50%;
+  transform:translateX(-50%);
+  background:#FFFFFF;
+  border-radius:16px;
+  padding:8px 14px;
+  font-size:13px;font-weight:600;color:var(--ink);
+  box-shadow:var(--shadow);
+  opacity:0;transition:opacity .25s ease, transform .25s ease;
+  white-space:nowrap;pointer-events:none;
+}
+.bubble.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+.bubble::after{
+  content:"";position:absolute;bottom:-7px;left:50%;
+  transform:translateX(-50%);
+  border:7px solid transparent;border-top-color:#FFFFFF;border-bottom:0;
+}
+/* 数值卡片 */
+.stats{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;margin:18px auto 0;max-width:360px;
+}
+.stat{
+  background:rgba(255,255,255,.88);
+  border-radius:20px;padding:12px 14px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(4px);
+  display:flex;align-items:center;gap:10px;
+}
+.stat .icon{
+  width:34px;height:34px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.stat .icon svg{width:20px;height:20px;}
+.stat .info{flex:1;min-width:0;}
+.stat .label{font-size:11px;color:#8AA0B0;font-weight:500;}
+.stat .val-row{display:flex;align-items:center;gap:8px;}
+.stat .num{font-size:16px;font-weight:700;}
+.stat .bar{flex:1;height:6px;border-radius:999px;background:#EEF3F6;overflow:hidden;}
+.stat .bar i{display:block;height:100%;border-radius:999px;transition:width .5s ease;}
+.s-hungry i{background:linear-gradient(90deg,#F7E0B0,#F2C48A);}
+.s-clean i{background:linear-gradient(90deg,#CBE8F4,#A9D6E8);}
+.s-mood i{background:linear-gradient(90deg,#F7CFD9,#F2A6B8);}
+.s-intim i{background:linear-gradient(90deg,#D9E8F7,#AEC6E8);}
+/* 互动按钮 */
+.actions{
+  position:relative;z-index:10;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:12px;padding:20px 20px 10px;max-width:420px;margin:0 auto;
+}
+.action-btn{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  background:#FFFFFF;border:none;border-radius:20px;
+  padding:13px 6px 11px;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:transform .15s ease;
+}
+.action-btn:active{transform:scale(.93);}
+.action-btn .a-ico{
+  width:44px;height:44px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.action-btn .a-ico svg{width:26px;height:26px;}
+.action-btn .a-txt{font-size:12px;font-weight:600;color:var(--ink);}
+/* 底部导航 */
+.bottomnav{
+  position:absolute;bottom:0;left:0;right:0;z-index:50;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(10px);
+  border-radius:24px 24px 0 0;
+  box-shadow:0 -6px 24px rgba(46,58,68,.06);
+  padding:8px 12px calc(10px + env(safe-area-inset-bottom));
+  display:flex;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 0 4px;border:none;background:transparent;cursor:pointer;
+  color:#9AAEBC;transition:color .2s;
+}
+.nav-item svg{width:24px;height:24px;}
+.nav-item span{font-size:11px;font-weight:600;}
+.nav-item.active{color:#4A6A80;}
+.nav-item.active .n-ico{transform:translateY(-2px);}
+.n-ico{transition:transform .2s;}
+/* ===== 页面容器 ===== */
+.page{
+  position:absolute;top:0;left:0;right:0;bottom:0;z-index:30;
+  background:linear-gradient(180deg,#F3F9FC 0%,#FFFFFF 60%);
+  transform:translateX(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.page.open{transform:translateX(0);}
+.page .page-head{
+  display:flex;align-items:center;gap:12px;
+  padding:calc(14px + env(safe-area-inset-top)) 20px 12px;
+}
+.page .back{
+  width:36px;height:36px;border-radius:50%;
+  background:#FFFFFF;border:none;box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.page .back svg{width:20px;height:20px;color:var(--ink);}
+.page .page-title{font-size:18px;font-weight:700;}
+.page .page-body{flex:1;overflow-y:auto;padding:4px 20px 110px;-webkit-overflow-scrolling:touch;}
+/* ===== 通用列表卡片 ===== */
+.grid-list{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-card{
+  background:var(--card);border-radius:22px;padding:16px;
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:8px;
+}
+.grid-card .gc-head{display:flex;align-items:center;gap:8px;}
+.grid-card .gc-emoji{font-size:22px;}
+.grid-card .gc-name{font-size:14px;font-weight:700;}
+.grid-card .gc-desc{font-size:12px;color:#8AA0B0;line-height:1.5;}
+.grid-card.locked{opacity:.55;}
+/* 商店/收集 tab */
+.tabs{display:flex;gap:8px;margin-bottom:16px;}
+.tab{
+  flex:1;padding:9px 0;border:none;border-radius:14px;
+  background:#FFFFFF;font-size:13px;font-weight:600;color:#8AA0B0;cursor:pointer;
+  box-shadow:var(--shadow);
+}
+.tab.active{background:#4A6A80;color:#fff;}
+/* 成就/心愿列表 */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{
+  position:relative;padding:0 0 20px 36px;
+}
+.tl-item::before{
+  content:"";position:absolute;left:10px;top:6px;bottom:-2px;width:2px;
+  background:#D9ECF4;
+}
+.tl-item:last-child::before{display:none;}
+.tl-item .dot{
+  position:absolute;left:4px;top:4px;width:14px;height:14px;border-radius:50%;
+  background:#FFFFFF;border:3px solid #A9C6DA;
+}
+.tl-item.done .dot{background:#F2A6B8;border-color:#F2A6B8;}
+.tl-card{
+  background:var(--card);border-radius:18px;padding:13px 15px;
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:12px;
+}
+.tl-card .t-emoji{font-size:24px;}
+.tl-card .t-info{flex:1;}
+.tl-card .t-name{font-size:14px;font-weight:700;}
+.tl-card .t-desc{font-size:12px;color:#8AA0B0;margin-top:2px;}
+.tl-card .t-reward{font-size:11px;color:#B98A5A;margin-top:4px;}
+.tl-card .t-state{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;}
+.tl-card .t-state.todo{background:#EEF3F6;color:#8AA0B0;}
+.tl-card .t-state.claim{background:#F7E7C8;color:#B98A5A;}
+.tl-card .t-state.done{background:#E3F0F5;color:#4A6A80;}
+/* 弹层 */
+.modal-mask{
+  position:absolute;inset:0;z-index:90;
+  background:rgba(46,58,68,.35);
+  display:none;align-items:flex-end;justify-content:center;
+}
+.modal-mask.show{display:flex;}
+.modal{
+  width:100%;max-width:480px;
+  background:var(--cream);
+  border-radius:28px 28px 0 0;
+  padding:24px 24px calc(24px + env(safe-area-inset-bottom));
+  animation:slideUp .3s ease;
+  max-height:82vh;overflow-y:auto;
+}
+@keyframes slideUp{from{transform:translateY(60px);opacity:.6;}to{transform:translateY(0);opacity:1;}}
+.modal h3{font-size:18px;font-weight:700;text-align:center;margin-bottom:16px;}
+.food-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.food-item{
+  background:#FFFFFF;border-radius:18px;padding:14px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  box-shadow:var(--shadow);border:none;cursor:pointer;
+}
+.food-item:active{transform:scale(.94);}
+.food-item .f-emoji{font-size:30px;}
+.food-item .f-name{font-size:12px;font-weight:700;}
+.food-item .f-eff{font-size:10px;color:#8AA0B0;}
+.modal-actions{display:flex;gap:12px;margin-top:18px;}
+.btn{
+  flex:1;padding:14px 0;border:none;border-radius:16px;
+  font-size:15px;font-weight:700;cursor:pointer;
+}
+.btn-primary{background:#4A6A80;color:#fff;}
+.btn-ghost{background:#FFFFFF;color:#8AA0B0;box-shadow:var(--shadow);}
+/* 小游戏 */
+.game-intro{text-align:center;padding:10px 0;}
+.game-intro .g-emoji{font-size:46px;}
+.game-intro .g-name{font-size:20px;font-weight:700;margin:8px 0 4px;}
+.game-intro .g-desc{font-size:13px;color:#8AA0B0;line-height:1.6;max-width:300px;margin:0 auto;}
+.game-btn{
+  display:block;width:min(240px,80%);margin:22px auto 0;
+  padding:15px 0;border:none;border-radius:999px;
+  background:linear-gradient(90deg,#4A6A80,#6E94AC);
+  color:#fff;font-size:16px;font-weight:700;cursor:pointer;
+  box-shadow:0 10px 24px rgba(74,106,128,.3);
+}
+.game-btn:active{transform:scale(.96);}
+/* 接饼干小游戏 */
+#catchGame{
+  position:absolute;inset:0;z-index:95;
+  background:linear-gradient(180deg,#D9ECF4 0%,#EFF7FB 70%);
+  display:none;flex-direction:column;
+}
+#catchGame.show{display:flex;}
+.catch-hud{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:calc(16px + env(safe-area-inset-top)) 24px 8px;
+  font-weight:700;font-size:16px;color:var(--ink);
+}
+.catch-hud .end{background:#fff;border:none;box-shadow:var(--shadow);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;}
+#catchField{
+  position:relative;flex:1;overflow:hidden;margin:0 10px 10px;border-radius:24px;
+  background:linear-gradient(180deg,#CFE6F2 0%,#F0F8FC 60%);
+}
+.catch-basket{
+  position:absolute;bottom:16px;width:90px;height:64px;z-index:5;
+  display:flex;align-items:center;justify-content:center;font-size:40px;
+  filter:drop-shadow(0 6px 10px rgba(46,58,68,.18));
+}
+.catch-item{
+  position:absolute;top:-40px;font-size:34px;
+  animation:fall linear forwards;
+  filter:drop-shadow(0 4px 8px rgba(46,58,68,.15));
+}
+@keyframes fall{to{transform:translateY(700px);}}
+.catch-end-screen{
+  position:absolute;inset:0;background:rgba(255,255,255,.9);
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  z-index:10;text-align:center;
+}
+.catch-end-screen.show{display:flex;}
+.catch-end-screen .big{font-size:52px;}
+.catch-end-screen .res{font-size:20px;font-weight:700;}
+/* 泡泡搓澡 */
+#bubbleGame{position:absolute;inset:0;z-index:95;background:linear-gradient(180deg,#CFE6F2,#E8F4F8);display:none;flex-direction:column;}
+#bubbleGame.show{display:flex;}
+.bub-hud{display:flex;justify-content:space-between;align-items:center;padding:calc(16px + env(safe-area-inset-top)) 24px 8px;font-weight:700;}
+.bub-field{position:relative;flex:1;margin:0 10px 10px;border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#BFE0EF,#EAF6FA);}
+.bub-seal{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:150px;font-size:120px;text-align:center;filter:drop-shadow(0 8px 12px rgba(46,58,68,.18));}
+.bubble-item{position:absolute;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;animation:float 2.6s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+/* 心情拍手 */
+#clapGame{position:absolute;inset:0;z-index:95;background:linear-gradient(180deg,#F7E3E8,#FBF0F2);display:none;flex-direction:column;}
+#clapGame.show{display:flex;}
+.clap-hud{display:flex;justify-content:space-between;align-items:center;padding:calc(16px + env(safe-area-inset-top)) 24px 8px;font-weight:700;}
+.clap-field{position:relative;flex:1;margin:0 10px 10px;border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#F2D7DE,#FCF2F4);text-align:center;}
+.clap-seal{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:150px;filter:drop-shadow(0 8px 12px rgba(46,58,68,.18));transition:transform .15s;}
+.clap-seal.hit{transform:translateX(-50%) scale(.9) rotate(-4deg);}
+/* 小窝 */
+.nest-scene{
+  width:100%;border-radius:24px;overflow:hidden;margin-bottom:18px;
+  position:relative;
+}
+.nest-scene .bg{
+  width:100%;aspect-ratio:16/10;object-fit:cover;
+}
+.nest-scene .seal-in-nest{
+  position:absolute;bottom:12%;left:50%;transform:translateX(-50%);
+  width:34%;font-size:0;
+}
+.nest-scene .seal-in-nest img{width:100%;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(46,58,68,.2));}
+.nest-scene .hat-in-nest{
+  position:absolute;bottom:32%;left:50%;transform:translateX(-50%);
+  font-size:30px;z-index:3;
+}
+.hat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px;}
+.hat-item{
+  background:#fff;border-radius:18px;padding:14px 6px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;
+}
+.hat-item.selected{border-color:#4A6A80;}
+.hat-item .h-emoji{font-size:30px;}
+.hat-item .h-name{font-size:11px;font-weight:700;}
+.hat-item.locked{opacity:.5;cursor:not-allowed;}
+/* 无障碍：reduced motion */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- 装饰云 -->
+  <div class="deco-cloud" style="width:70px;height:26px;top:80px;left:-14px;"></div>
+  <div class="deco-cloud" style="width:100px;height:34px;top:150px;right:-20px;"></div>
+  <div class="deco-cloud" style="width:56px;height:22px;top:240px;left:-10px;opacity:.4;"></div>
+
+  <!-- ===== 顶部状态栏 ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><img src="assets/seal-core.png" alt="豹豹"></div>
+      <div class="name">豹豹的小窝</div>
+    </div>
+    <div class="currencies">
+      <div class="currency"><span class="ico ico-cookie"></span><span id="cookieNum">40</span></div>
+      <div class="currency"><span class="ico ico-starsand"></span><span id="starNum">0</span></div>
+    </div>
+  </header>
+
+  <!-- ===== 亲密度等级条 ===== -->
+  <div class="levelbar">
+    <div class="level-tag" id="levelTag">初次见面 Lv.1</div>
+    <div class="level-track"><div class="level-fill" id="levelFill"></div></div>
+  </div>
+
+  <!-- ===== 主舞台 ===== -->
+  <main class="stage">
+    <p class="stage-msg" id="stageMsg">你来啦，先摸摸我的头吧。</p>
+    <div class="seal-wrap" id="sealWrap">
+      <div class="hat-overlay" id="hatOverlay"></div>
+      <img src="assets/seal-waving.png" alt="豹豹" id="sealImg">
+      <div class="bubble" id="bubble"></div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="icon s-hungry"><svg viewBox="0 0 24 24" fill="none" stroke="#D9A05B" stroke-width="2"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg></div>
+        <div class="info">
+          <div class="label">饱食</div>
+          <div class="val-row"><span class="num" id="hungryNum">65</span><div class="bar"><i id="hungryBar"></i></div></div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="icon s-clean"><svg viewBox="0 0 24 24" fill="none" stroke="#6E94AC" stroke-width="2"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M8 14h8"/></svg></div>
+        <div class="info">
+          <div class="label">清洁</div>
+          <div class="val-row"><span class="num" id="cleanNum">65</span><div class="bar"><i id="cleanBar"></i></div></div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="icon s-mood"><svg viewBox="0 0 24 24" fill="none" stroke="#F2A6B8" stroke-width="2"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M9 9h.01M15 9h.01M8 14s1.5 2 4 2 4-2 4-2"/></svg></div>
+        <div class="info">
+          <div class="label">心情</div>
+          <div class="val-row"><span class="num" id="moodNum">75</span><div class="bar"><i id="moodBar"></i></div></div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="icon s-intim"><svg viewBox="0 0 24 24" fill="none" stroke="#7C9CC0" stroke-width="2"><path d="M12 21C7 17 3 13.5 3 9.5 3 6.5 5 4.5 7.5 4.5c1.8 0 3.4 1 4.5 2.6 1.1-1.6 2.7-2.6 4.5-2.6C19 4.5 21 6.5 21 9.5c0 4-4 7.5-9 11.5z"/></svg></div>
+        <div class="info">
+          <div class="label">亲密度</div>
+          <div class="val-row"><span class="num" id="intimNum">0</span><div class="bar"><i id="intimBar"></i></div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== 互动按钮 ===== -->
+  <div class="actions">
+    <button class="action-btn" data-act="feed">
+      <span class="a-ico" style="background:#F7E7C8;"><svg viewBox="0 0 24 24" fill="none" stroke="#B98A5A" stroke-width="2"><path d="M12 2c1.5 2.5 2.5 4.5 2.5 6.5A2.5 2.5 0 0 1 12 11c-1.4 0-2.5-1.1-2.5-2.5C9.5 6.5 10.5 4.5 12 2z"/><path d="M6 22c0-3 2.5-5 6-5s6 2 6 5H6z"/></svg></span>
+      <span class="a-txt">喂食</span>
+    </button>
+    <button class="action-btn" data-act="bath">
+      <span class="a-ico" style="background:#D9ECF4;"><svg viewBox="0 0 24 24" fill="none" stroke="#5D8CA6" stroke-width="2"><path d="M4 12h16v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-4z"/><path d="M6 12V6a3 3 0 0 1 6 0v3"/></svg></span>
+      <span class="a-txt">洗澡</span>
+    </button>
+    <button class="action-btn" data-act="play">
+      <span class="a-ico" style="background:#F7D9DF;"><svg viewBox="0 0 24 24" fill="none" stroke="#D97A94" stroke-width="2"><path d="M6 3v4M18 3v4M6 5h12M4 9h16v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9z"/></svg></span>
+      <span class="a-txt">玩耍</span>
+    </button>
+    <button class="action-btn" data-act="pet">
+      <span class="a-ico" style="background:#FBF0F2;"><svg viewBox="0 0 24 24" fill="none" stroke="#D98A98" stroke-width="2"><path d="M7 20h10M8 20v-4M16 20v-4M5 8l-1 8M19 8l1 8M7 8h10v5a5 5 0 0 1-5 5h0a5 5 0 0 1-5-5V8z"/></svg></span>
+      <span class="a-txt">摸摸头</span>
+    </button>
+  </div>
+
+  <!-- ===== 底部导航 ===== -->
+  <nav class="bottomnav">
+    <button class="nav-item active" data-page="home">
+      <span class="n-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9.5z"/></svg></span>
+      <span>小窝</span>
+    </button>
+    <button class="nav-item" data-page="shop">
+      <span class="n-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7V5a3 3 0 0 1 6 0v2M6 7h12l-1 14H7L6 7z"/></svg></span>
+      <span>商店</span>
+    </button>
+    <button class="nav-item" data-page="wishes">
+      <span class="n-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21C7 17 3 13.5 3 9.5 3 6.5 5 4.5 7.5 4.5c1.8 0 3.4 1 4.5 2.6 1.1-1.6 2.7-2.6 4.5-2.6C19 4.5 21 6.5 21 9.5c0 4-4 7.5-9 11.5z"/></svg></span>
+      <span>心愿</span>
+    </button>
+    <button class="nav-item" data-page="achiev">
+      <span class="n-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M8 4h8M8 4v7a4 4 0 0 0 8 0V4M5 4h3M16 4h3"/></svg></span>
+      <span>成就</span>
+    </button>
+  </nav>
+
+  <!-- ===== 页面：商店 ===== -->
+  <section class="page" id="page-shop">
+    <div class="page-head">
+      <button class="back" data-close="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="page-title">商店</div>
+    </div>
+    <div class="page-body">
+      <div class="tabs">
+        <button class="tab active" data-shop-tab="food">食物</button>
+        <button class="tab" data-shop-tab="hat">帽子</button>
+        <button class="tab" data-shop-tab="nest">小窝</button>
+      </div>
+      <div id="shopFood" class="grid-list"></div>
+      <div id="shopHat" class="grid-list" style="display:none;"></div>
+      <div id="shopNest" class="grid-list" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- ===== 页面：心愿 ===== -->
+  <section class="page" id="page-wishes">
+    <div class="page-head">
+      <button class="back" data-close="wishes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="page-title">心愿回忆</div>
+    </div>
+    <div class="page-body">
+      <div id="wishList" class="timeline"></div>
+    </div>
+  </section>
+
+  <!-- ===== 页面：成就 ===== -->
+  <section class="page" id="page-achiev">
+    <div class="page-head">
+      <button class="back" data-close="achiev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="page-title">成就</div>
+    </div>
+    <div class="page-body">
+      <div id="achievList" class="grid-list"></div>
+    </div>
+  </section>
+
+  <!-- ===== 弹层：喂食 ===== -->
+  <div class="modal-mask" id="maskFeed">
+    <div class="modal">
+      <h3>想喂豹豹吃点什么呢？</h3>
+      <div class="food-grid" id="feedFoodGrid"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" data-close-mask="maskFeed">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 弹层：洗澡 ===== -->
+  <div class="modal-mask" id="maskBath">
+    <div class="modal">
+      <h3>给豹豹洗澡澡</h3>
+      <div class="game-intro">
+        <div class="g-emoji">🫧</div>
+        <div class="g-name">泡泡搓澡</div>
+        <div class="g-desc">点掉泡泡，把豹豹洗得干干净净！</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="startBubble">开始搓澡</button>
+        <button class="btn btn-ghost" data-close-mask="maskBath">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 弹层：玩耍 ===== -->
+  <div class="modal-mask" id="maskPlay">
+    <div class="modal">
+      <h3>和豹豹玩什么？</h3>
+      <div class="grid-list">
+        <div class="grid-card">
+          <div class="gc-head"><span class="gc-emoji">🍪</span><span class="gc-name">接饼干</span></div>
+          <div class="gc-desc">左右移动接住掉落的饼干，赚取饼干奖励。</div>
+          <button class="btn btn-primary" id="startCatch">去玩</button>
+        </div>
+        <div class="grid-card">
+          <div class="gc-head"><span class="gc-emoji">👏</span><span class="gc-name">心情拍手</span></div>
+          <div class="gc-desc">跟着节奏拍手，把豹豹的好心情拉满。</div>
+          <button class="btn btn-primary" id="startClap">去玩</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" data-close-mask="maskPlay">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 小游戏：接饼干 ===== -->
+  <div id="catchGame">
+    <div class="catch-hud">
+      <span>🍪 <span id="catchScore">0</span></span>
+      <span>接饼干</span>
+      <button class="end" id="catchEndBtn">结束</button>
+    </div>
+    <div id="catchField">
+      <div class="catch-basket" id="catchBasket">🛒</div>
+      <div class="catch-end-screen" id="catchResult">
+        <div class="big">🍪</div>
+        <div class="res" id="catchResultText">接了 0 块饼干</div>
+        <button class="btn btn-primary" id="catchAgain" style="max-width:200px;">再来一次</button>
+        <button class="btn btn-ghost" id="catchBack" style="max-width:200px;">返回</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 小游戏：泡泡搓澡 ===== -->
+  <div id="bubbleGame">
+    <div class="bub-hud">
+      <span>🫧 <span id="bubbleScore">0</span>/<span id="bubbleTarget">12</span></span>
+      <span>搓泡泡</span>
+      <button class="end catch-hud .end" id="bubbleEndBtn" style="background:#fff;border:none;box-shadow:var(--shadow);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;">结束</button>
+    </div>
+    <div class="bub-field" id="bubField">
+      <div class="bub-seal" id="bubSeal">🦭</div>
+    </div>
+  </div>
+
+  <!-- ===== 小游戏：心情拍手 ===== -->
+  <div id="clapGame">
+    <div class="clap-hud">
+      <span>👏 <span id="clapCount">0</span></span>
+      <span>拍手</span>
+      <button class="end" id="clapEndBtn" style="background:#fff;border:none;box-shadow:var(--shadow);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;">结束</button>
+    </div>
+    <div class="clap-field" id="clapField">
+      <div class="clap-seal" id="clapSeal">🦭</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   豹豹的小窝 · 游戏逻辑
+   ============================================================ */
+'use strict';
+
+/* ---------- 静态数据 ---------- */
+const FOODS = [
+  {id:'fish',  name:'小鱼干',  emoji:'🐟',  cost:6,  effect:'+30 饱食 +5 心情'},
+  {id:'jelly', name:'奶冻',    emoji:'🍮',  cost:5,  effect:'+25 饱食 +8 心情'},
+  {id:'cake',  name:'小蛋糕',  emoji:'🍰',  cost:9,  effect:'+35 饱食 +12 心情'},
+  {id:'sushi', name:'海藻饼',  emoji:'🍘',  cost:7,  effect:'+28 饱食 +6 心情'},
+  {id:'ice',   name:'冰激凌',  emoji:'🍦',  cost:8,  effect:'+25 饱食 +15 心情'},
+  {id:'milk',  name:'暖牛奶',  emoji:'🥛',  cost:4,  effect:'+20 饱食 +4 心情'},
+  {id:'berry', name:'莓果',    emoji:'🍓',  cost:6,  effect:'+22 饱食 +10 心情'},
+  {id:'cookie',name:'小饼干',  emoji:'🍪',  cost:3,  effect:'+15 饱食 +3 心情'},
+  {id:'sea',   name:'海带汤',  emoji:'🍲',  cost:5,  effect:'+24 饱食 +5 心情'},
+];
+const HATS = [
+  {id:'none',   name:'光脑袋', emoji:'', cost:0, desc:'初始就有的自然造型'},
+  {id:'straw',  name:'草帽',   emoji:'👒', cost:40, desc:'遮太阳，也遮羞羞'},
+  {id:'wool',   name:'绒线帽', emoji:'🧶', cost:60, desc:'暖呼呼的过冬必备'},
+  {id:'beret',  name:'贝雷帽', emoji:'🎩', cost:80, desc:'豹豹也有艺术家气质'},
+  {id:'crown',  name:'小皇冠', emoji:'👑', cost:120, desc:'今天也是冰雪之王'},
+  {id:'chef',   name:'厨师帽', emoji:'🍳', cost:70, desc:'厨艺巅峰的神秘武器'},
+  {id:'flower', name:'小花环', emoji:'🌸', cost:55, desc:'春天提前到了'},
+  {id:'star',   name:'星星帽', emoji:'⭐', cost:100, desc:'闪闪发光的开心能量'},
+];
+const NESTS = [
+  {id:'snow', name:'初雪小窝', desc:'一片刚落的雪地', cost:0},
+  {id:'cave', name:'冰晶洞穴', desc:'晶莹剔透的避风港', cost:90},
+  {id:'forest', name:'针叶雪林', desc:'松林间的静谧小窝', cost:120},
+  {id:'harbor', name:'港湾灯塔', desc:'海风与灯光相伴', cost:150},
+];
+const WISHES = [
+  {id:'w1', name:'初次见面', desc:'我们的故事从这里开始', need:1, reward:10},
+  {id:'w2', name:'第一顿饱饭', desc:'喂豹豹吃下第一口', need:3, reward:15},
+  {id:'w3', name:'一起玩一玩', desc:'陪豹豹玩过小游戏', need:5, reward:20},
+  {id:'w4', name:'焕然一新', desc:'第一次给豹豹洗澡', need:8, reward:25},
+  {id:'w5', name:'我们的小家', desc:'布置属于我们的小窝', need:12, reward:30},
+];
+const ACHIEV = [
+  {id:'a1', name:'新朋友', desc:'亲密度达到 1 级', check:()=>S.intim>=1, reward:5},
+  {id:'a2', name:'小熟客', desc:'亲密度达到 3 级', check:()=>S.intim>=3, reward:15},
+  {id:'a3', name:'好伙伴', desc:'亲密度达到 6 级', check:()=>S.intim>=6, reward:30},
+  {id:'a4', name:'吃货认证', desc:'累计喂食 10 次', check:()=>S.count.feed>=10, reward:10},
+  {id:'a5', name:'美食家', desc:'累计喂食 30 次', check:()=>S.count.feed>=30, reward:25},
+  {id:'a6', name:'干净宝宝', desc:'累计洗澡 10 次', check:()=>S.count.bath>=10, reward:10},
+  {id:'a7', name:'游戏高手', desc:'累计玩小游戏 10 次', check:()=>S.count.play>=10, reward:20},
+  {id:'a8', name:'贴心铲屎官', desc:'累计摸摸 50 次', check:()=>S.count.pet>=50, reward:20},
+  {id:'a9', name:'收集家', desc:'解锁 3 顶帽子', check:()=>Object.values(S.owned.hats).filter(Boolean).length>=3, reward:20},
+  {id:'a10', name:'百万富翁', desc:'攒下 100 块饼干', check:()=>S.cookie>=100, reward:30},
+];
+
+/* ---------- 游戏状态 ---------- */
+const SAVE_KEY = 'baobao_nest_v1';
+function defaultState(){
+  return {
+    hungry:65, clean:65, mood:75, intim:0,
+    cookie:40, star:0,
+    level:1,
+    last:Date.now(),
+    count:{feed:0,bath:0,play:0,pet:0,game:0},
+    owned:{foods:[],hats:{none:true},nests:['snow']},
+    curHat:'none', curNest:'snow',
+    wishes:{}, achiev:{},
+  };
+}
+let S = load();
+
+function load(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return defaultState();
+    const d = JSON.parse(raw);
+    return Object.assign(defaultState(), d, {
+      owned:Object.assign({foods:[],hats:{none:true},nests:['snow']}, d.owned||{}),
+      count:Object.assign(defaultState().count, d.count||{}),
+    });
+  }catch(e){ return defaultState(); }
+}
+function save(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }
+  catch(e){ console.warn('存档失败', e); }
+}
+
+/* ---------- 核心逻辑 ---------- */
+const MAX = 100;
+function clamp(v){ return Math.max(0, Math.min(MAX, Math.round(v))); }
+
+function tick(){
+  const now = Date.now();
+  const minutes = Math.floor((now - S.last)/60000);
+  if(minutes>0){
+    S.last = now;
+    const dec = Math.floor(minutes/10);
+    if(dec>0){
+      S.hungry = clamp(S.hungry - dec);
+      S.clean  = clamp(S.clean  - Math.floor(dec*0.8));
+      S.mood   = clamp(S.mood   - Math.floor(dec*0.6));
+    }
+    S.last = Math.min(now, S.last + 24*60*60*1000);
+  }
+}
+function addIntim(n){
+  S.intim += n;
+  const newLevel = Math.floor(S.intim/20)+1;
+  if(newLevel > S.level){
+    S.level = newLevel;
+    toast('亲密度升级！现在是 Lv.'+S.level+' 🎉');
+  }
+  checkAchiev();
+}
+function giveReward(cookie, star){
+  if(cookie){ S.cookie += cookie; }
+  if(star){ S.star += star; }
+}
+
+/* ---------- 界面元素快捷引用 ---------- */
+const $ = id => document.getElementById(id);
+const sealImg = $('sealImg');
+const bubbleEl = $('bubble');
+
+function showBubble(text){
+  bubbleEl.textContent = text;
+  bubbleEl.classList.add('show');
+  clearTimeout(showBubble._t);
+  showBubble._t = setTimeout(()=>bubbleEl.classList.remove('show'), 1800);
+}
+let toastTimer;
+function toast(text){
+  const el = $('stageMsg');
+  el.textContent = text;
+  el.style.opacity = 0;
+  requestAnimationFrame(()=>{ el.style.transition='opacity .3s'; el.style.opacity=1; });
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ el.style.opacity=0; }, 1600);
+}
+function setMsg(text){
+  $('stageMsg').textContent = text;
+  $('stageMsg').style.opacity = 1;
+}
+
+/* ---------- 渲染 ---------- */
+function render(){
+  $('cookieNum').textContent = S.cookie;
+  $('starNum').textContent = S.star;
+  $('hungryNum').textContent = S.hungry;
+  $('cleanNum').textContent = S.clean;
+  $('moodNum').textContent = S.mood;
+  $('intimNum').textContent = S.intim;
+  $('hungryBar').style.width = S.hungry+'%';
+  $('cleanBar').style.width = S.clean+'%';
+  $('moodBar').style.width = S.mood+'%';
+  $('intimBar').style.width = (S.intim%20)/20*100+'%';
+  $('levelTag').textContent = levelName(S.level)+' Lv.'+S.level;
+  renderShop();
+  renderWishes();
+  renderAchiev();
+  renderHatNest();
+}
+function levelName(l){
+  const names=['初次见面','熟络起来','形影不离','心有灵犀','形影相随'];
+  return names[Math.min(l-1,names.length-1)];
+}
+
+/* ---------- 商店渲染 ---------- */
+function renderShop(){
+  const foodsEl = $('shopFood');
+  foodsEl.innerHTML = FOODS.map(f=>{
+    const owned = S.owned.foods.includes(f.id);
+    return `<div class="grid-card ${owned?'':'locked'}">
+      <div class="gc-head"><span class="gc-emoji">${f.emoji}</span><span class="gc-name">${f.name}</span></div>
+      <div class="gc-desc">${f.effect}</div>
+      <button class="btn btn-primary" ${owned?'style="background:#B8C9D4;"':''} onclick="buyFood('${f.id}')">${owned?'已解锁':'🍪 '+f.cost}</button>
+    </div>`;
+  }).join('');
+  const hatEl = $('shopHat');
+  hatEl.innerHTML = HATS.map(h=>{
+    const owned = S.owned.hats[h.id];
+    return `<div class="grid-card ${owned?'':'locked'}">
+      <div class="gc-head"><span class="gc-emoji">${h.emoji||'🐾'}</span><span class="gc-name">${h.name}</span></div>
+      <div class="gc-desc">${h.desc}</div>
+      <button class="btn btn-primary" ${owned?'style="background:#B8C9D4;"':''} onclick="${owned?`useHat('${h.id}')`:`buyHat('${h.id}')`}">${owned?(S.curHat===h.id?'佩戴中':'戴上'):'🍪 '+h.cost}</button>
+    </div>`;
+  }).join('');
+  const nestEl = $('shopNest');
+  nestEl.innerHTML = NESTS.map(n=>{
+    const owned = S.owned.nests.includes(n.id);
+    return `<div class="grid-card ${owned?'':'locked'}">
+      <div class="gc-head"><span class="gc-emoji">🏔️</span><span class="gc-name">${n.name}</span></div>
+      <div class="gc-desc">${n.desc}</div>
+      <button class="btn btn-primary" ${owned?'style="background:#B8C9D4;"':''} onclick="${owned?`useNest('${n.id}')`:`buyNest('${n.id}')`}">${owned?(S.curNest===n.id?'布置中':'布置'):'🍪 '+n.cost}</button>
+    </div>`;
+  }).join('');
+}
+function buyFood(id){
+  const f = FOODS.find(x=>x.id===id);
+  if(!f) return;
+  if(S.owned.foods.includes(id)){ toast('已经解锁啦'); return; }
+  if(S.cookie < f.cost){ toast('饼干不够，去玩小游戏吧 🍪'); return; }
+  S.cookie -= f.cost;
+  S.owned.foods.push(id);
+  toast('解锁了 '+f.name+'！');
+  save(); render();
+}
+function buyHat(id){
+  const h = HATS.find(x=>x.id===id);
+  if(!h || id==='none') return;
+  if(S.owned.hats[id]){ useHat(id); return; }
+  if(S.cookie < h.cost){ toast('饼干不够啦'); return; }
+  S.cookie -= h.cost;
+  S.owned.hats[id] = true;
+  S.curHat = id;
+  toast('戴上 '+h.name+'！');
+  checkAchiev();
+  save(); render();
+}
+function useHat(id){
+  if(!S.owned.hats[id]) return;
+  S.curHat = id;
+  save(); render();
+}
+function buyNest(id){
+  const n = NESTS.find(x=>x.id===id);
+  if(!n) return;
+  if(S.owned.nests.includes(id)){ useNest(id); return; }
+  if(S.cookie < n.cost){ toast('饼干不够啦'); return; }
+  S.cookie -= n.cost;
+  S.owned.nests.push(id);
+  S.curNest = id;
+  toast('搬进 '+n.name+'！');
+  save(); render();
+}
+function useNest(id){
+  if(!S.owned.nests.includes(id)) return;
+  S.curNest = id;
+  save(); render();
+}
+
+/* ---------- 心愿 / 成就 ---------- */
+function checkWishes(){
+  WISHES.forEach(w=>{
+    if(S.wishes[w.id]==='done') return;
+    if(S.intim >= w.need){
+      S.wishes[w.id] = 'claim';
+    }
+  });
+  render();
+}
+function claimWish(id){
+  const w = WISHES.find(x=>x.id===id);
+  if(!w || S.wishes[id]!=='claim') return;
+  S.wishes[id] = 'done';
+  giveReward(0, w.reward);
+  toast('心愿达成！+'+w.reward+' ⭐');
+  checkAchiev();
+  save(); render();
+}
+function renderWishes(){
+  const el = $('wishList');
+  el.innerHTML = WISHES.map(w=>{
+    const st = S.wishes[w.id];
+    const state = st==='done' ? 'done' : (st==='claim' ? 'claim' : 'todo');
+    const stateTxt = st==='done' ? '已完成' : (st==='claim' ? '领取' : '进行中');
+    return `<div class="tl-item ${state==='done'?'done':''}">
+      <div class="dot"></div>
+      <div class="tl-card">
+        <div class="t-emoji">${state==='done'?'💛':'🔒'}</div>
+        <div class="t-info">
+          <div class="t-name">${w.name}</div>
+          <div class="t-desc">${w.desc}</div>
+          <div class="t-reward">亲密度 ${w.need} · 奖励 ⭐${w.reward}</div>
+        </div>
+        ${state==='claim'?`<button class="t-state claim" onclick="claimWish('${w.id}')">领取</button>`:`<span class="t-state ${state==='done'?'done':'todo'}">${stateTxt}</span>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+function checkAchiev(){
+  ACHIEV.forEach(a=>{
+    if(S.achiev[a.id]) return;
+    try{ if(a.check()){ S.achiev[a.id]='claim'; } }catch(e){}
+  });
+  render();
+}
+function claimAchiev(id){
+  const a = ACHIEV.find(x=>x.id===id);
+  if(!a || S.achiev[id]!=='claim') return;
+  S.achiev[id]='done';
+  giveReward(a.reward,0);
+  toast('成就达成！+'+a.reward+' 🍪');
+  save(); render();
+}
+function renderAchiev(){
+  const el = $('achievList');
+  el.innerHTML = ACHIEV.map(a=>{
+    const st = S.achiev[a.id];
+    const isDone = st==='done';
+    const isClaim = st==='claim';
+    return `<div class="grid-card ${isDone?'':'locked'}">
+      <div class="gc-head"><span class="gc-emoji">${isDone?'🏅':'🥉'}</span><span class="gc-name">${a.name}</span></div>
+      <div class="gc-desc">${a.desc}</div>
+      <button class="btn btn-primary" ${isDone?'style="background:#B8C9D4;"':''} onclick="${isClaim?`claimAchiev('${a.id}')`:`''`}">${isDone?'已完成':(isClaim?'领取 🍪'+a.reward:'未达成')}</button>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- 互动 ---------- */
+const sealWrap = $('sealWrap');
+function touchAnim(){
+  sealWrap.classList.add('touch');
+  setTimeout(()=>sealWrap.classList.remove('touch'), 350);
+}
+function doPet(){
+  S.count.pet++;
+  touchAnim();
+  addIntim(2);
+  S.mood = clamp(S.mood+3);
+  const msgs=['豹豹舒服地眯起了眼睛','感觉被爱意包围了','尾巴轻轻摇呀摇','豹豹蹭了蹭你的手'];
+  showBubble(msgs[Math.floor(Math.random()*msgs.length)]);
+  setMsg('摸摸豹豹的头，亲密度 +2');
+  save(); render();
+}
+function openFeed(){
+  const grid = $('feedFoodGrid');
+  grid.innerHTML = FOODS.map(f=>{
+    const owned = S.owned.foods.includes(f.id);
+    return `<button class="food-item" ${owned?'':'disabled style="opacity:.45"'} onclick="doFeed('${f.id}')">
+      <span class="f-emoji">${f.emoji}</span>
+      <span class="f-name">${f.name}</span>
+      <span class="f-eff">${f.effect}</span>
+      ${owned?'':'<span style="font-size:10px;color:#B98A5A;">未解锁</span>'}
+    </button>`;
+  }).join('');
+  $('maskFeed').classList.add('show');
+}
+function doFeed(id){
+  const f = FOODS.find(x=>x.id===id);
+  if(!f || !S.owned.foods.includes(id)) return;
+  S.count.feed++;
+  touchAnim();
+  S.hungry = clamp(S.hungry + 30);
+  S.mood = clamp(S.mood + 5);
+  showBubble('啊呜～好香！');
+  setMsg('豹豹吃掉了'+f.name+'，饱食 +30');
+  addIntim(3);
+  $('maskFeed').classList.remove('show');
+  save(); render();
+}
+function doBath(){
+  $('maskBath').classList.add('show');
+}
+
+/* ---------- 导航 ---------- */
+function openPage(name){
+  closeAllPages();
+  const map = {shop:'page-shop', wishes:'page-wishes', achiev:'page-achiev'};
+  if(map[name]){
+    const p = $(map[name]);
+    p.classList.add('open');
+  }
+  const nav = document.querySelector(`.nav-item[data-page="${name}"]`);
+  if(nav) nav.classList.add('active');
+}
+function closePage(name){
+  const map = {shop:'page-shop', wishes:'page-wishes', achiev:'page-achiev'};
+  if($(map[name])) $(map[name]).classList.remove('open');
+  document.querySelector('.nav-item[data-page="home"]').classList.add('active');
+}
+function closeAllPages(){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector('.nav-item[data-page="home"]').classList.add('active');
+}
+
+/* ---------- 小窝渲染 ---------- */
+function renderHatNest(){
+  const overlay = document.getElementById('hatOverlay');
+  if(overlay){
+    const hat = HATS.find(x=>x.id===S.curHat);
+    overlay.textContent = hat && hat.emoji ? hat.emoji : '';
+  }
+}
+
+/* ---------- 事件绑定 ---------- */
+function bindEvents(){
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.addEventListener('click', ()=>{
+      if(n.dataset.page==='home'){ closeAllPages(); }
+      else openPage(n.dataset.page);
+    });
+  });
+  document.querySelectorAll('.back').forEach(b=>{
+    b.addEventListener('click', ()=>{ closePage(b.dataset.close); });
+  });
+  document.querySelectorAll('.action-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const act = btn.dataset.act;
+      if(act==='feed') openFeed();
+      else if(act==='bath') doBath();
+      else if(act==='play') openPlay();
+      else if(act==='pet') doPet();
+    });
+  });
+  document.querySelectorAll('[data-close-mask]').forEach(b=>{
+    b.addEventListener('click', ()=>$(b.dataset.closeMask).classList.remove('show'));
+  });
+  document.querySelectorAll('.tab[data-shop-tab]').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab[data-shop-tab]').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const tab = t.dataset.shopTab;
+      $('shopFood').style.display = tab==='food'?'':'none';
+      $('shopHat').style.display = tab==='hat'?'':'none';
+      $('shopNest').style.display = tab==='nest'?'':'none';
+    });
+  });
+  $('startCatch').addEventListener('click', ()=>{ $('maskPlay').classList.remove('show'); startCatchGame(); });
+  $('startClap').addEventListener('click', ()=>{ $('maskPlay').classList.remove('show'); startClapGame(); });
+  $('startBubble').addEventListener('click', ()=>{ $('maskBath').classList.remove('show'); startBubbleGame(); });
+}
+function openPlay(){
+  $('maskPlay').classList.add('show');
+}
+
+/* ---------- 小游戏：接饼干 ---------- */
+let catchRunning=false, catchScore=0, catchTimer=null, catchSpawn=null;
+function startCatchGame(){
+  $('catchGame').classList.add('show');
+  catchScore=0; catchRunning=true;
+  $('catchScore').textContent='0';
+  $('catchResult').classList.remove('show');
+  updateBasket();
+  catchSpawn = setInterval(spawnCookie, 900);
+  catchTimer = setTimeout(()=>endCatchGame(), 30000);
+}
+let catchBasketX=50;
+function updateBasket(){
+  $('catchBasket').style.left = catchBasketX+'%';
+  $('catchBasket').style.transform='translateX(-50%)';
+}
+function spawnCookie(){
+  if(!catchRunning) return;
+  const field = $('catchField');
+  const item = document.createElement('div');
+  item.className='catch-item';
+  item.textContent = Math.random()<0.15?'💣':'🍪';
+  item.style.left = (8+Math.random()*84)+'%';
+  const dur = 1.6+Math.random()*1.2;
+  item.style.animationDuration = dur+'s';
+  field.appendChild(item);
+  setTimeout(()=>{ if(item.parentNode) item.remove(); }, dur*1000+50);
+}
+function endCatchGame(){
+  catchRunning=false;
+  clearInterval(catchSpawn);
+  clearTimeout(catchTimer);
+  const reward = Math.floor(catchScore/2);
+  S.count.game++;
+  S.count.play++;
+  S.cookie += reward;
+  addIntim(2);
+  $('catchResult').classList.add('show');
+  $('catchResultText').textContent = '接了 '+catchScore+' 块饼干，获得 '+reward+' 🍪';
+  checkAchiev();
+  save(); render();
+}
+$('catchEndBtn').addEventListener('click', ()=>{ clearInterval(catchSpawn); clearTimeout(catchTimer); endCatchGame(); });
+$('catchAgain').addEventListener('click', ()=>{
+  document.querySelectorAll('.catch-item').forEach(x=>x.remove());
+  $('catchResult').classList.remove('show');
+  catchScore=0; catchRunning=true; $('catchScore').textContent='0';
+  catchSpawn=setInterval(spawnCookie,900);
+  catchTimer=setTimeout(()=>endCatchGame(),30000);
+});
+$('catchBack').addEventListener('click', ()=>{
+  $('catchGame').classList.remove('show');
+  document.querySelectorAll('.catch-item').forEach(x=>x.remove());
+});
+
+/* ---------- 小游戏：泡泡搓澡 ---------- */
+let bubbleRunning=false, bubbleScore=0, bubbleTimer=null, bubbleSpawn=null;
+function startBubbleGame(){
+  $('bubbleGame').classList.add('show');
+  bubbleRunning=true; bubbleScore=0;
+  $('bubbleScore').textContent='0';
+  document.querySelectorAll('.bubble-item').forEach(x=>x.remove());
+  bubbleSpawn = setInterval(spawnBubble, 650);
+  bubbleTimer = setTimeout(()=>endBubbleGame(), 30000);
+}
+function spawnBubble(){
+  if(!bubbleRunning) return;
+  const field = $('bubField');
+  const b = document.createElement('div');
+  b.className='bubble-item';
+  b.textContent = Math.random()<0.2?'🧼':'🫧';
+  b.style.left = (8+Math.random()*82)+'%';
+  b.style.top = (10+Math.random()*55)+'%';
+  b.dataset.val = b.textContent==='🫧' ? 1 : 2;
+  b.addEventListener('click', ()=>{
+    if(!bubbleRunning) return;
+    if(b.dataset.val==='🫧'){
+      bubbleScore++;
+      b.remove();
+      $('bubbleScore').textContent=bubbleScore;
+      $('bubSeal').style.transform='translateX(-50%) scale(.94)';
+      setTimeout(()=>$('bubSeal').style.transform='translateX(-50%)',150);
+      if(bubbleScore>=12) endBubbleGame();
+    } else {
+      b.remove();
+      toast('哎呀，那是肥皂块');
+    }
+  });
+  field.appendChild(b);
+}
+function endBubbleGame(){
+  bubbleRunning=false;
+  clearInterval(bubbleSpawn); clearTimeout(bubbleTimer);
+  document.querySelectorAll('.bubble-item').forEach(x=>x.remove());
+  const done = bubbleScore>=12;
+  if(done){
+    S.clean = MAX;
+    S.count.bath++;
+    S.count.game++;
+    S.mood = clamp(S.mood+10);
+    addIntim(3);
+    showBubble('洗得香喷喷！');
+    setMsg('清洁满格，豹豹焕然一新');
+  } else {
+    S.clean = clamp(S.clean+Math.min(20,bubbleScore*2));
+    S.mood = clamp(S.mood+5);
+    showBubble('好像还没洗干净…');
+    setMsg('洗掉 '+bubbleScore+' 个泡泡');
+  }
+  checkAchiev(); save(); render();
+  setTimeout(()=>{ $('bubbleGame').classList.remove('show'); }, 1200);
+}
+$('bubbleEndBtn').addEventListener('click', ()=>{ clearInterval(bubbleSpawn); clearTimeout(bubbleTimer); endBubbleGame(); });
+
+/* ---------- 小游戏：心情拍手 ---------- */
+let clapRunning=false, clapCount=0, clapTimer=null, clapTask=null;
+function startClapGame(){
+  $('clapGame').classList.add('show');
+  clapRunning=true; clapCount=0;
+  $('clapCount').textContent='0';
+  scheduleClap();
+  clapTimer = setTimeout(()=>endClapGame(), 15000);
+}
+function scheduleClap(){
+  if(!clapRunning) return;
+  const delay = 700 + Math.random()*900;
+  clapTask = setTimeout(()=>{
+    if(!clapRunning) return;
+    showClapSignal();
+    scheduleClap();
+  }, delay);
+}
+function showClapSignal(){
+  const seal = $('clapSeal');
+  seal.classList.add('hit');
+  window._clapWindow = true;
+  setTimeout(()=>{ seal.classList.remove('hit'); window._clapWindow=false; }, 500);
+}
+function endClapGame(){
+  clapRunning=false;
+  clearTimeout(clapTimer); clearTimeout(clapTask);
+  window._clapWindow=false;
+  const reward = Math.floor(clapCount/2);
+  S.mood = clamp(S.mood + Math.min(25, clapCount*3));
+  S.count.game++;
+  S.count.play++;
+  giveReward(reward, 0);
+  addIntim(2);
+  showBubble('心情+'+Math.min(25, clapCount*3));
+  setMsg('和豹豹拍手 '+clapCount+' 次，心情大涨');
+  checkAchiev(); save(); render();
+  setTimeout(()=>{ $('clapGame').classList.remove('show'); }, 1200);
+}
+$('clapSeal').addEventListener('click', ()=>{
+  if(!clapRunning) return;
+  if(window._clapWindow){
+    clapCount++;
+    $('clapCount').textContent=clapCount;
+  }
+});
+$('clapEndBtn').addEventListener('click', ()=>{ clearTimeout(clapTimer); clearTimeout(clapTask); endClapGame(); });
+
+/* ---------- 接饼干：触摸/鼠标控制篮子 ---------- */
+const catchField = $('catchField');
+function moveBasket(px){
+  const rect = catchField.getBoundingClientRect();
+  catchBasketX = Math.max(4, Math.min(96, (px-rect.left)/rect.width*100));
+  updateBasket();
+}
+catchField.addEventListener('touchmove', e=>{
+  const t = e.touches[0];
+  moveBasket(t.clientX);
+});
+catchField.addEventListener('mousemove', e=>{
+  if(catchRunning) moveBasket(e.clientX);
+});
+
+/* ---------- 初始化 ---------- */
+function init(){
+  tick();
+  bindEvents();
+  checkWishes();
+  render();
+  setMsg('你来啦，先摸摸我的头吧。');
+  setInterval(()=>{ tick(); checkWishes(); render(); }, 30000);
+  window.addEventListener('beforeunload', save);
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden) save(); });
+}
+init();
+</script>
+<!-- something todo: script -->
+</body>
+</html>
